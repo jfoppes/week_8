@@ -1,5 +1,5 @@
 #!usr/bin/env python3
-#Jacob Foppes Project 8 Wokemon Game Refactod 
+#Jacob Foppes Project 8 Wokemon Game Refactor
 
 
 import time
@@ -7,6 +7,7 @@ import random
 import os  
 from pathlib import Path
 import sys
+import csv
 '''Intro: Welocme to the game baisic tutorial.
     Choose your name, color '''
     
@@ -23,33 +24,51 @@ with open("accounts.txt","r+") as users:
     savedGames = games.split("\n")
 
 
-wokemon = []# list of wokemon-----each poekemon is a list of the pokemon features 
+allwokemon = []# list of wokemon-----each poekemon is a list of the pokemon features 
+
+'''
+with open("wokemon.txt","r") as allWok:
+    reader = csv.reader(allWok)
+    allwoke = list(reader) #create list of lists from reading of csv file --- each line is its own list
+    allwoke = filter(None,allwoke) # remove empy lists created by blank lines in csv
+    for i in allwoke:
+        allwokemon[i[0]] = i[1:] # for each list in the master list, the first entry is the key , the rest are the value       
+'''
+with open("wokemon.txt","r") as allWok:
+    reader = csv.DictReader(allWok)
+    for i in reader: # create a list of dictionaires with atrributes of wokemon 
+        allwokemon.append(i)
+        
+        
 basicWokemon = []
 electricWokemon = []
 waterWokemon = []
 fireWokemon = []
-earthWokemon = []
-with open("wokemon.txt","r") as allWok:
-    for line in allWok:
+earthWokemon = []     
+    
+print(allwokemon)
         
 
 class Wokemon:
-    def __init__(self,name,type,hp,strenght,weakness,attack1,attack2):
-        self.name = name
-        self.type = type
-        self.hp = hp
-        self.strenght = strenght
-        self.weakness = weakness
-        self.attack1 = attack1
-        self.attack2 = attack2
+    def __init__(self):
+        randomwokemon= random.choice(allwokemon)
+        for key,value in randomwokemon.items():
+            setattr(self,key,value) # for each key value pair in the random pokemon dictionary crete an attriburte (ie name,hp ,type)
+        self.getHP(self.hp) # call the get HP function when an instace of this class is creates 
         
     def getHP(self,hp): # this fucntion will Determin  a random hp number for wild wokemon witin 5 points of the default HP 
+        self.hp = random.randrange((int(hp)-4),(int(hp)+5))
         pass
-    
+    def effectiveness1(): # this will determi nthe effectiveness of the wokmons attack
+        pass
+    def effectiveness2(): 
+        pass
         
-        
-        
+newrand=Wokemon()
+print(newrand.name,newrand.type,newrand.hp)
+fight1= Wokemon()
 
+print(fight1.name,fight1.type,fight1.hp)
 
 def print_slow(str):# Credit : Sebastian - Stack overflow https://stackoverflow.com/questions/4099422/printing-slowly-simulate-typing
     for letter in str:

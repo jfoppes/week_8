@@ -1,4 +1,4 @@
-
+name,type,hp,strenght,weakness
 Wikachu,electric,10,water,rock
 Walteon,electric,10,water,rock
 Welectrodude,electric,10,water,rock
