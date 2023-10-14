@@ -47,78 +47,77 @@ class Wokemon:
         self.getHP(self.hp) # call the get HP function when an instace of this class is creates 
         self.effectiveness1(self.att1dammage)
         self.effectiveness2(self.att2dammage)
-        
+        self.hp = int(self.hp)  
     def getHP(self,hp): # this fucntion will Determin  a random hp number for wild wokemon witin 5 points of the default HP 
         self.hp = random.randrange((int(hp)-4),(int(hp)+5))
     def effectiveness1(self,att1dammage): # this will ranomize effectiveness of the wokmons attack
         self.att1dammage = random.randrange((int(att1dammage)-2),(int(att1dammage)+2))
     def effectiveness2(self,att2dammage): # this will ranomize effectiveness of the wokmons attack
         self.att2dammage = random.randrange((int(att2dammage)-2),(int(att2dammage)+2))
-class PlayerWokemon:
-    def __init__(self,choice):
-        self.choice = choice
-        for key,value in choice:
-            setattr(self,key,value)
-    
         
-newrand=Wokemon()
-print(newrand.Name,newrand.type,newrand.hp,newrand.att1dammage,newrand.att2dammage)
-
-newrand2= Wokemon()
-print(newrand2.Name,newrand2.type,newrand2.hp,newrand2.att1dammage,newrand2.att2dammage)
+class PlayerWokemon:
+    def __init__(self):
+        self.choice = self.getWoke() # calls the function where player choses thier wokemon 
+        for key,value in self.choice[0].items(): # self.choice is a tuple of the wokemon dictionary, and the index of said dictinary in the wokeDex list. this selcts the dict
+            setattr(self,key,value)# extracts dicationary key value pairs and creates attributes for the object  
+    def getWoke(self):
+        global breaker
+        breaker = True
+        while breaker == True:
+            choice = input("\nChoose your Wokemon:\n"+str(wokeDex)+"\n")
+            for i in wokeDex: # iterate thru each dictionary i nthe wokedex list 
+                for p in i.items(): #iterate thru tuples of items in each wokemon dictionary, within the list of wokemon ex: ("Name","Wikachu")
+                    if p[1] == choice: #if an entry in the dict matches the playerys choice:
+                        self.choice = i #sets player pokemon object for battle 
+                        self.wokloc = wokeDex.index(i) #creates varibale for index of selected woekmon within the woedex list 
+                        breaker = False
+                        return self.choice,self.wokloc # returns dictionary of player choice and location of said choice within the list of pokemon. these are reutned as tuple
+                    else:
+                        print("Please choose a Wokemon from your Wokedex")
+                        break
 
 def print_slow(str):# Credit : Sebastian - Stack overflow https://stackoverflow.com/questions/4099422/printing-slowly-simulate-typing
     for letter in str:
         sys.stdout.write(letter)
         sys.stdout.flush()
-        time.sleep(0.05)
+        time.sleep(0.0005)
 def input_slow(str): # Credit: https://www.101computing.net/python-typing-text-effect/
   for character in str:
     sys.stdout.write(character)
     sys.stdout.flush()
-    time.sleep(0.05)
+    time.sleep(0.0005)
   value = input()  
   return value  
-def battle(randWokemon):# take the pokemon generated orivouse and perfom a battle 
-    rwok = (randWokemon.Name,randWokemon.Health) # extract name and healktgh
+def battle(randWokemon,pWokemon):# take the pokemon generated orivouse and perfom a battle 
     while True:
-        wokname = input_slow("\nChoose your Wokemon:\n"+str(wokeDex)+"\n")
-        wok = Wokemon(wokname)
-        if wok in wokeDex:
-            global cwokhealth
-            global pwokhealth
-            pwokhealth = int(wokeDex[wok])
-            print_slow("\nYour HP: " + str(pwokhealth) + "\n") #print player helath 
-            cwokhealth = int(rwok[1])
-            print_slow("Oponent HP: " + str(cwokhealth) + "\n")# print oponent helath 
-            print_slow("\nLooks like its " + wok + " vs " + rwok[0] + "\n")
-            time.sleep(1)
-            def attack():
-                global cwokhealth
-                global pwokhealth
-                phit1 = random.randrange(0,5,1)#randomly genreated player dammage to compouter 
-                cwokhealth -= phit1 #subtract hit points form health 
-                print_slow(wok + " Strikes!\nIt does " + str(phit1) + " dammage!\n\n")
-                chit1 = random.randrange(0,5,1)#randomly genereated compouter dammage to play
-                pwokhealth -= chit1#subtract hit points form health 
-                print_slow(rwok[0] + " Strikes!\nIt does " + str(chit1) + " dammage!\n\n")
-                print_slow("Oponent HP: " + str(cwokhealth) + "\n")
-                print_slow("Your HP: " + str(pwokhealth) + "\n\n")
-            attack()
-        else:
-            print("Please choose a Wokemon from your Wokedex")
-            continue
+        print("\nYou chose :",pWokemon.Name,"\n")
+        print_slow("\nYour HP: " + str(pWokemon.hp) + "\n") #print player helath 
+        print_slow("Oponent HP: " + str(randWokemon.hp) + "\n")# print oponent helath 
+        print_slow("\nLooks like its " + pWokemon.Name + " vs " + randWokemon.Name + "\n")
+        time.sleep(1)
+        def attack():
+            phit1 = random.randrange(0,5,1)#randomly genreated player dammage to compouter 
+            randWokemon.hp -= phit1 #subtract hit points form health 
+            print_slow(pWokemon.Name + " Strikes!\nIt does " + str(phit1) + " dammage!\n\n")
+            chit1 = random.randrange(0,5,1)#randomly genereated compouter dammage to play
+            pWokemon.hp -= chit1#subtract hit points form health 
+            print_slow(randWokemon.Name + " Strikes!\nIt does " + str(chit1) + " dammage!\n\n")
+            print_slow("Oponent HP: " + str(randWokemon.hp) + "\n")
+            print_slow("Your HP: " + str(pWokemon.hp) + "\n\n")
+        attack()
+    
             
-        while pwokhealth > 0 and cwokhealth > 0: # while both players health greate than 0 comntinue the attack function 
+        while pWokemon.hp > 0 and randWokemon.hp > 0: # while both players health greate than 0 comntinue the attack function 
             attack()
-        if pwokhealth <= 0 and  pwokhealth <= cwokhealth: #if comoputer wins
+        if pWokemon.hp <= 0 and  pWokemon.hp <= randWokemon.hp: #if comoputer wins
             print_slow("Dang..., Thats tough boss. \nLooks like you lost this one.\nTime to head home and heal your Wokemon\n ")
             loby()
-        elif cwokhealth <= 0 and pwokhealth >= cwokhealth: # if player wins
+        elif randWokemon.hp <= 0 and pWokemon.hp >= randWokemon.hp: # if player wins
             global currentLevel
             currentLevel += 1
-            print_slow("You won!!\nYou now have " + rwok[0] + " added to your wokedex!!\nYou will now move on to "+ str(currentLevel)+"!\n\n")
-            wokeDex[rwok[0]] = rwok[1]
+            print_slow("You won!!\nYou now have " + randWokemon.Name + " added to your wokedex!!\nYou will now move on to "+ str(currentLevel)+"!\n\n")
+            capture = randWokemon.__dict__
+            wokeDex.append(capture)
             saveg()
             loby()
         
@@ -144,7 +143,8 @@ def l1():#game level 1
                     time.sleep(2)
                     break 
                 elif fight1 == "battle":
-                    battle(randWokemon)
+                    pWokemon = PlayerWokemon()
+                    battle(randWokemon,pWokemon)
                 else:
                     print_slow("Please choose run or battle\n")
                     continue
@@ -163,7 +163,8 @@ def l1():#game level 1
                     rwok = randWokemon.Name # extract just the name 
                     fight2 = input_slow("\n\nA wild " + rwok + " appears!!\n Do you battle? or Run away?\n Enter 'Battle', or 'Run'\n").lower()
                     if fight2 == "battle":
-                        battle(randWokemon)
+                        pWokemon = PlayerWokemon()
+                        battle(randWokemon,pWokemon)
                     elif fight2 == "run":
                         print_slow("You got away just in time, better head back to that fork in the path...\n\n")
                         continue
@@ -184,7 +185,8 @@ def l1():#game level 1
                         time.sleep(2)
                         continue 
                     elif fight1 == "battle":
-                        battle(randWokemon)
+                        pWokemon = PlayerWokemon()
+                        battle(randWokemon,pWokemon)
                     else: 
                         print_slow("Choose battle, or Run.\n")
                 else:
@@ -218,7 +220,8 @@ def l2():#game level 2
                     time.sleep(2)
                     continue 
                 elif fight1 == "battle":
-                    battle(randWokemon)
+                    pWokemon = PlayerWokemon()
+                    battle(randWokemon,pWokemon)
                 else: 
                     print_slow("Choose battle, or Run.\n")
         elif path3 == "volcano":
@@ -234,7 +237,8 @@ def l2():#game level 2
                     time.sleep(2)
                     continue 
                 elif fight1 == "battle":
-                    battle(randWokemon)
+                    pWokemon = PlayerWokemon()
+                    battle(randWokemon,pWokemon)
                 else: 
                     print_slow("Choose battle, or Run.\n")
         else:
@@ -324,6 +328,8 @@ def mkuser(): # if the user does not have an account they can make one
             newGame()
             break
 def saveg():## this fuction can be called to save the game durring play by typing save 
+    for i in wokeDex:
+        for p in i
     keys = wokeDex[0]
     with open("wokedex.csv","w",newline="") as dex:
         writer = csv.DictWriter(dex,keys)
