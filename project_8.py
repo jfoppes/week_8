@@ -8,6 +8,7 @@ import os
 from pathlib import Path
 import sys
 import csv
+import shutil
 '''Intro: Welocme to the game baisic tutorial.
     Choose your name, color '''
     
@@ -16,37 +17,26 @@ savedGames = [] #list of all saved games
 auth_usr = ""
 save = "" # users current location in the game  game
 owd = os.getcwd()
-wokeDex = {} #authenitcated users wokedex 
+wokeDex = [] #authenitcated users wokedex 
 currentLevel = 0
 
 with open("accounts.txt","r+") as users:
     games = users.read()
     savedGames = games.split("\n")
 
-
 allwokemon = []# list of wokemon-----each poekemon is a list of the pokemon features 
-
-'''
-with open("wokemon.txt","r") as allWok:
-    reader = csv.reader(allWok)
-    allwoke = list(reader) #create list of lists from reading of csv file --- each line is its own list
-    allwoke = filter(None,allwoke) # remove empy lists created by blank lines in csv
-    for i in allwoke:
-        allwokemon[i[0]] = i[1:] # for each list in the master list, the first entry is the key , the rest are the value       
-'''
-with open("wokemon.txt","r") as allWok:
+  
+with open("wokemon.csv","r") as allWok:
     reader = csv.DictReader(allWok)
     for i in reader: # create a list of dictionaires with atrributes of wokemon 
         allwokemon.append(i)
-        
-        
+            
+ 
 basicWokemon = []
 electricWokemon = []
 waterWokemon = []
 fireWokemon = []
-earthWokemon = []     
-    
-print(allwokemon)
+earthWokemon = []  
         
 
 class Wokemon:
@@ -55,20 +45,27 @@ class Wokemon:
         for key,value in randomwokemon.items():
             setattr(self,key,value) # for each key value pair in the random pokemon dictionary crete an attriburte (ie name,hp ,type)
         self.getHP(self.hp) # call the get HP function when an instace of this class is creates 
+        self.effectiveness1(self.att1dammage)
+        self.effectiveness2(self.att2dammage)
         
     def getHP(self,hp): # this fucntion will Determin  a random hp number for wild wokemon witin 5 points of the default HP 
         self.hp = random.randrange((int(hp)-4),(int(hp)+5))
-        pass
-    def effectiveness1(): # this will determi nthe effectiveness of the wokmons attack
-        pass
-    def effectiveness2(): 
-        pass
+    def effectiveness1(self,att1dammage): # this will ranomize effectiveness of the wokmons attack
+        self.att1dammage = random.randrange((int(att1dammage)-2),(int(att1dammage)+2))
+    def effectiveness2(self,att2dammage): # this will ranomize effectiveness of the wokmons attack
+        self.att2dammage = random.randrange((int(att2dammage)-2),(int(att2dammage)+2))
+class PlayerWokemon:
+    def __init__(self,choice):
+        self.choice = choice
+        for key,value in choice:
+            setattr(self,key,value)
+    
         
 newrand=Wokemon()
-print(newrand.name,newrand.type,newrand.hp)
-fight1= Wokemon()
+print(newrand.Name,newrand.type,newrand.hp,newrand.att1dammage,newrand.att2dammage)
 
-print(fight1.name,fight1.type,fight1.hp)
+newrand2= Wokemon()
+print(newrand2.Name,newrand2.type,newrand2.hp,newrand2.att1dammage,newrand2.att2dammage)
 
 def print_slow(str):# Credit : Sebastian - Stack overflow https://stackoverflow.com/questions/4099422/printing-slowly-simulate-typing
     for letter in str:
@@ -83,9 +80,10 @@ def input_slow(str): # Credit: https://www.101computing.net/python-typing-text-e
   value = input()  
   return value  
 def battle(randWokemon):# take the pokemon generated orivouse and perfom a battle 
-    rwok = (randWokemon[0],randWokemon[1]) # extract name and healktgh
+    rwok = (randWokemon.Name,randWokemon.Health) # extract name and healktgh
     while True:
-        wok = input_slow("\nChoose your Wokemon:\n"+str(wokeDex)+"\n")
+        wokname = input_slow("\nChoose your Wokemon:\n"+str(wokeDex)+"\n")
+        wok = Wokemon(wokname)
         if wok in wokeDex:
             global cwokhealth
             global pwokhealth
@@ -121,7 +119,7 @@ def battle(randWokemon):# take the pokemon generated orivouse and perfom a battl
             currentLevel += 1
             print_slow("You won!!\nYou now have " + rwok[0] + " added to your wokedex!!\nYou will now move on to "+ str(currentLevel)+"!\n\n")
             wokeDex[rwok[0]] = rwok[1]
-            savel()
+            saveg()
             loby()
         
 def l1():#game level 1
@@ -137,8 +135,8 @@ def l1():#game level 1
             print_slow(".")
             time.sleep(.75)
             print_slow(".")
-            randWokemon = random.choice(list(wokemon.items())) #chose random Wokemon from dict of wokemon 
-            rwok = randWokemon[0] # extract just the name 
+            randWokemon =  Wokemon()#create random wokemon objkect 
+            rwok = randWokemon.Name # extract just the name 
             while True:
                 fight1 = input_slow("\nA wild " + rwok + " appears!!\n Do you battle? or Run away?\n Enter 'Battle', or 'Run\n").lower()
                 if fight1 == "run":
@@ -161,8 +159,8 @@ def l1():#game level 1
                     print_slow(".")
                     time.sleep(.75)
                     print_slow(".")
-                    randWokemon = random.choice(list(waterWokemon.items())) #chose random Wokemon from dict of wokemon
-                    rwok = randWokemon[0] # extract just the name 
+                    randWokemon = Wokemon()#create random wokemon objkect 
+                    rwok = randWokemon.Name # extract just the name 
                     fight2 = input_slow("\n\nA wild " + rwok + " appears!!\n Do you battle? or Run away?\n Enter 'Battle', or 'Run'\n").lower()
                     if fight2 == "battle":
                         battle(randWokemon)
@@ -178,8 +176,8 @@ def l1():#game level 1
                     time.sleep(.75)
                     print_slow(".")
                     time.sleep(.75)
-                    randWokemon = random.choice(list(wokemon.items())) #chose random Wokemon from dict of wokemon 
-                    rwok = randWokemon[0] # extract just the name 
+                    randWokemon = Wokemon()#create random wokemon objkect 
+                    rwok = randWokemon.Name # extract just the name 
                     fight1 = input_slow("\nA wild " + rwok + " appears!!\n Do you battle? or Run away?\n Enter 'Battle', or n'Run\n").lower()
                     if fight1 == "run":
                         print_slow("You got away just in time! Better head back to that fork in the path.\n\n")
@@ -211,8 +209,8 @@ def l2():#game level 2
             time.sleep(.5)
             print_slow("You walk closer......\n")
             time.sleep(.75)
-            randWokemon = random.choice(list(earthWokemon.items())) #chose random Wokemon from dict of wokemon 
-            rwok = randWokemon[0] # extract just the name 
+            randWokemon = Wokemon()#create random wokemon objkect 
+            rwok = randWokemon.Name # extract just the name 
             while True:
                 fight1 = input_slow("\nA wild " + rwok + " appears!!\n Do you battle? or Run away?\n Enter 'Battle', or n'Run\n").lower()
                 if fight1 == "run":
@@ -227,8 +225,8 @@ def l2():#game level 2
             print_slow("You start walking towards the volcano.\n")
             time.sleep(.75)
             print_slow("Suddenly a creature rushes twords you!")
-            randWokemon = random.choice(list(fireWokemon.items())) #chose random Wokemon from dict of wokemon 
-            rwok = randWokemon[0] # extract just the name 
+            randWokemon = Wokemon()#create random wokemon objkect 
+            rwok = randWokemon.Name # extract just the name 
             while True:
                 fight1 = input_slow("\nA wild " + rwok + " appears!!\n Do you battle? or Run away?\n Enter 'Battle', or n'Run\n").lower()
                 if fight1 == "run":
@@ -313,37 +311,37 @@ def mkuser(): # if the user does not have an account they can make one
             auth = open("accounts.txt","r+") 
             auth.write("\n".join(str(line) for line in savedGames))# write easch line of the saved gmaes list  to the accouts file
             auth.close()
-            p = Path(pname)
             os.chdir("savedGames") # changes dir to the users folder so that a new game can be saved
-            p.mkdir() # make play direcotry 
+            p = Path(pname)
+            os.mkdir(p) # make player directory 
+            default= "defaultWokedex.csv"
+            shutil.copy2(default,str(p)+"/wokedex.csv") # copy defualt wokedex to player directory 
             os.chdir(pname) # enter player direcotry 
-            global save
-            global wokeDex
             sav = open("saveG.txt", "x") # create save file
-            wd = open("wokedex.txt", "x") # create save file
             os.chdir(owd)
             print("Account creation sucessfull. Logged in as:", pname,"\n")
             breaker == False 
             newGame()
             break
 def saveg():## this fuction can be called to save the game durring play by typing save 
-    os.chdir("savedGames/" + auth_usr)
-    dex = open("wokedex.txt","w")
-    for key, value in wokeDex.items():
-        dex.write('%s %s\n' % (key, value))
-    lvl = open("saveG.txt","w")
-    lvl.write(str(currentLevel))
-def savel():## this fuction can be called to save the game durring play by typing save 
-    dex = open("wokedex.txt","w")
-    for key, value in wokeDex.items():
-        dex.write('%s %s\n' % (key, value))
-    dex.close()
+    keys = wokeDex[0]
+    with open("wokedex.csv","w",newline="") as dex:
+        writer = csv.DictWriter(dex,keys)
+        writer.writeheader()
+        writer.writerows(wokeDex)
+        dex.close()
     lvl = open("saveG.txt","w")
     lvl.write(str(currentLevel))
     lvl.close()
     print("Game Saved. Your currnet level: "+str(currentLevel))
             
 def newGame():# First Sequence in game after user amkes account
+    global wokeDex
+    os.chdir("savedGames/" + auth_usr)
+    with open("wokedex.csv","r") as dex:
+        reader = csv.DictReader(dex)
+        for i in reader: # create a list of dictionaires with atrributes of wokemon 
+            wokeDex.append(i)
     time.sleep(.25)
     print_slow("\nProf Woke: Hello "+auth_usr+" My Name is Professor Woke! Ill show you arround\n")
     time.sleep(.1)
@@ -352,7 +350,6 @@ def newGame():# First Sequence in game after user amkes account
     print_slow("Prof Woke: This is where you will store the wokemon you catch along the way.\n")
     time.sleep(.1)
     print_slow("Prof Woke: I going to start you off with this Wikachu.\n")
-    wokeDex["Wikachu"] = 11
     print("\n",auth_usr,"'s Wokedex:",wokeDex,"\n")
     time.sleep(1)
     global currentLevel
@@ -383,10 +380,10 @@ def welcome():# where user logs in to contine or creates new game
                     global wokeDex
                     os.chdir("savedGames/")
                     os.chdir(auth_usr)
-                    with open("wokedex.txt", "r+") as wd:
-                        for line in wd:
-                            (wok,pow) = line.split()# Create tuple of wokemon/powerlevels
-                            wokeDex[(wok)] = pow #break the tuple in to doctiuonary key,value
+                    with open("wokeDex.csv","r") as dex:
+                        reader = csv.DictReader(dex)
+                        for i in reader: # create a list of dictionaires with atrributes of wokemon 
+                            wokeDex.append(i)
                 
                     print("\n Found Your Game!\n")
                     
