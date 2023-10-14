@@ -60,6 +60,7 @@ class PlayerWokemon:
         self.choice = self.getWoke() # calls the function where player choses thier wokemon 
         for key,value in self.choice[0].items(): # self.choice is a tuple of the wokemon dictionary, and the index of said dictinary in the wokeDex list. this selcts the dict
             setattr(self,key,value)# extracts dicationary key value pairs and creates attributes for the object  
+        self.hp = int(self.hp)  
     def getWoke(self):
         global breaker
         breaker = True
@@ -328,8 +329,6 @@ def mkuser(): # if the user does not have an account they can make one
             newGame()
             break
 def saveg():## this fuction can be called to save the game durring play by typing save 
-    for i in wokeDex:
-        for p in i
     keys = wokeDex[0]
     with open("wokedex.csv","w",newline="") as dex:
         writer = csv.DictWriter(dex,keys)
