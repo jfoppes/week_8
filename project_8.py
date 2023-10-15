@@ -10,7 +10,7 @@ import sys
 import csv
 import shutil
 '''Intro: Welocme to the game baisic tutorial.
-    Choose your name, color '''
+    Choose your name '''
     
 # GLOBAL VARIABLES 
 savedGames = [] #list of all saved games 
@@ -98,6 +98,7 @@ def battle(randWokemon,pWokemon):# take the pokemon generated orivouse and perfo
         time.sleep(1)
         def attack():
             phit1 = random.randrange(0,5,1)#randomly genreated player dammage to compouter 
+            randWokemon.hp = int(randWokemon.hp)
             randWokemon.hp -= phit1 #subtract hit points form health 
             print_slow(pWokemon.Name + " Strikes!\nIt does " + str(phit1) + " dammage!\n\n")
             chit1 = random.randrange(0,5,1)#randomly genereated compouter dammage to play
@@ -118,12 +119,13 @@ def battle(randWokemon,pWokemon):# take the pokemon generated orivouse and perfo
             currentLevel += 1
             print_slow("You won!!\nYou now have " + randWokemon.Name + " added to your wokedex!!\nYou will now move on to "+ str(currentLevel)+"!\n\n")
             capture = randWokemon.__dict__
+            capture["hp"] = capture["defhp"] # reset wokemon HP 
             wokeDex.append(capture)
             saveg()
             loby()
+            False
         
 def l1():#game level 1
-    global wokemon
     print_slow("Welcome to level 1!\n")
     while True:
         path1 = input_slow("You are wlaking down the street and you encounter a set a of 2 trail heads:\n 'Elk Road', and 'Spoon Drive' which do you take \n Enter 'Elk' or 'Spoon'\n").lower()
@@ -135,7 +137,7 @@ def l1():#game level 1
             print_slow(".")
             time.sleep(.75)
             print_slow(".")
-            randWokemon =  Wokemon()#create random wokemon objkect 
+            randWokemon =  Wokemon()#create random wokemon object 
             rwok = randWokemon.Name # extract just the name 
             while True:
                 fight1 = input_slow("\nA wild " + rwok + " appears!!\n Do you battle? or Run away?\n Enter 'Battle', or 'Run\n").lower()
@@ -160,7 +162,7 @@ def l1():#game level 1
                     print_slow(".")
                     time.sleep(.75)
                     print_slow(".")
-                    randWokemon = Wokemon()#create random wokemon objkect 
+                    randWokemon = Wokemon()#create random wokemon object 
                     rwok = randWokemon.Name # extract just the name 
                     fight2 = input_slow("\n\nA wild " + rwok + " appears!!\n Do you battle? or Run away?\n Enter 'Battle', or 'Run'\n").lower()
                     if fight2 == "battle":
@@ -187,7 +189,7 @@ def l1():#game level 1
                         continue 
                     elif fight1 == "battle":
                         pWokemon = PlayerWokemon()
-                        battle(randWokemon,pWokemon)
+                        battle(randWokemon,pWokemon)# run battle with the random workmon objec tand th player wokemon object 
                     else: 
                         print_slow("Choose battle, or Run.\n")
                 else:
@@ -261,6 +263,10 @@ def loby():# lobby is where the player once logged in, can either view thier Wok
         if lchoice == "start":
             level = open("saveG.txt","r").read()# save game file
             level = int(level)
+            if level >=3:
+                print("No more levels Yet! You  can still visit previous levels\n")
+                time.sleep(1)
+                continue
             levels[level]()# read savegame file and call level finciton based on the text in the file. this text is used as a key in a dictionary of all levels where the values are the fucntions that start the levels 
         elif lchoice == "prev":
             if currentLevel == 1:
@@ -303,7 +309,7 @@ def loby():# lobby is where the player once logged in, can either view thier Wok
 def mkuser(): # if the user does not have an account they can make one
     breaker = True
     while breaker ==True:
-        print_slow("Prof. Woke: Wecome to WokeyWorld!")
+        print_slow("Prof. Woke: Wecome to WokeyWorld!\n")
         pname = input("What shall I call you?\n")   
         if pname in savedGames or os.path.exists(pname+"/"):
             print("User already exists. Try again ")
@@ -329,9 +335,9 @@ def mkuser(): # if the user does not have an account they can make one
             newGame()
             break
 def saveg():## this fuction can be called to save the game durring play by typing save 
-    keys = wokeDex[0]
-    with open("wokedex.csv","w",newline="") as dex:
-        writer = csv.DictWriter(dex,keys)
+    keys = wokeDex[0] 
+    with open("wokedex.csv","w",newline="") as dex: #open player wokedex file 
+        writer = csv.DictWriter(dex,keys) 
         writer.writeheader()
         writer.writerows(wokeDex)
         dex.close()
@@ -342,6 +348,7 @@ def saveg():## this fuction can be called to save the game durring play by typin
             
 def newGame():# First Sequence in game after user amkes account
     global wokeDex
+    wokeDex = []
     os.chdir("savedGames/" + auth_usr)
     with open("wokedex.csv","r") as dex:
         reader = csv.DictReader(dex)
@@ -383,6 +390,7 @@ def welcome():# where user logs in to contine or creates new game
                     global auth_usr
                     auth_usr = un
                     global wokeDex
+                    wokeDex= []
                     os.chdir("savedGames/")
                     os.chdir(auth_usr)
                     with open("wokeDex.csv","r") as dex:
